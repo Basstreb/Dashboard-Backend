@@ -8,6 +8,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -81,6 +82,8 @@ func Login(c *fiber.Ctx) error {
 
 	token, err := claims.SignedString([]byte(SecretKey))
 
+	logrus.Info(token)
+
 	if err != nil {
 		c.Status(fiber.StatusInternalServerError)
 		return c.JSON(fiber.Map{
@@ -94,6 +97,8 @@ func Login(c *fiber.Ctx) error {
 		Expires:  time.Now().Add(time.Hour * 24),
 		HTTPOnly: true,
 	}
+
+	logrus.Info(cookie)
 
 	c.Cookie(&cookie)
 
@@ -110,10 +115,6 @@ func User(c *fiber.Ctx) error {
 	})
 
 	if err != nil {
-		// c.Status(fiber.StatusUnauthorized)
-		// return c.JSON(fiber.Map{
-		// 	"message": "Unauthenticated",
-		// })
 		return err
 	}
 

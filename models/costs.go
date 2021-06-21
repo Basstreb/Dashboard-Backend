@@ -12,6 +12,7 @@ type CostsCom struct {
 	ClientId        uint64         `json:"clientId" db:"client_id"`
 	ClientName      string         `json:"clientName" db:"cliet_name"`
 	Amount          float64        `json:"amount" db:"amount"`
+	AmountW         float64        `json:"amountW" db:"amount_w"`
 	Typo            string         `json:"typo" db:"typo"`
 	Iva             uint64         `json:"iva" db:"iva"`
 	CostDate        time.Time      `json:"costDate" db:"cost_date"`

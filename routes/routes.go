@@ -25,6 +25,10 @@ func Setup(app *fiber.App) {
 	app.Get("/list_offer", controllers.SendOfferData)
 	app.Get("/price_offer", controllers.FilterPriceDataMonth)
 
+	app.Post("/create_offer_reg", controllers.CreateOfferReg)
+	app.Post("/update_offer_reg", controllers.UpdateOfferReg)
+	app.Get("/list_offer_reg", controllers.SendOfferReg)
+
 	app.Get("/list_common", controllers.SendCommonCostData)
 	app.Post("/create_common", controllers.CreateCommonCost)
 	app.Post("/delete_common", controllers.DeleteCommonData)
@@ -40,6 +44,12 @@ func Setup(app *fiber.App) {
 	app.Post("/upload_update_pdf", controllers.UpdateUploadPdf)
 	app.Post("/upload_img", controllers.UploadImg)
 	app.Post("/upload_update_img", controllers.UpdateUploadImg)
+
+	app.Get("/list_iva_supported_price", controllers.IvaPriceSupported)
+	app.Get("/list_iva_repercuted_price", controllers.IvaPriceRepercuted)
+	app.Get("/list_iva_supported", controllers.IvaDataSoported)
+	app.Get("/list_iva_repercuted", controllers.IvaDataRepercuted)
+	app.Get("list_iva_total", controllers.IvaDataAcumulative)
 
 	// app.Post("/test", controllers.Test)
 }

@@ -7,14 +7,12 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 )
 
 func SendStaffCostData(c *fiber.Ctx) error {
 	var result []models.StaffCosts
 
 	database.DB.Raw(`SELECT * FROM staff_costs`).Scan(&result)
-	logrus.Info(result)
 	return c.JSON(result)
 }
 

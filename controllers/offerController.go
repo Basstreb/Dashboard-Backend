@@ -3,12 +3,10 @@ package controllers
 import (
 	"dashboard/database"
 	"dashboard/models"
-	"reflect"
 	"strconv"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 )
 
 var codes string
@@ -29,6 +27,8 @@ func CreateOffer(c *fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+
+	priceIva := price * 1.21
 
 	//Parse string to uint
 	clientId, err := strconv.ParseUint(string(data["clientId"]), 10, 64)
@@ -69,6 +69,7 @@ func CreateOffer(c *fiber.Ctx) error {
 			DecisionDate: date,
 			Status:       "PENDING",
 			Price:        price,
+			PriceIva:     priceIva,
 			Percent:      0,
 			CreatedAt:    time.Now().UTC(),
 		}
@@ -97,6 +98,7 @@ func CreateOffer(c *fiber.Ctx) error {
 			DecisionDate: date,
 			Status:       "PENDING",
 			Price:        price,
+			PriceIva:     priceIva,
 			Percent:      0,
 			CreatedAt:    time.Now().UTC(),
 		}
@@ -111,7 +113,6 @@ func SendOfferData(c *fiber.Ctx) error {
 	var result []models.OffersData
 
 	database.DB.Raw("SELECT * FROM offers_data").Scan(&result)
-	logrus.Info(result)
 	return c.JSON(result)
 }
 
@@ -149,6 +150,8 @@ func UpdateOfferData(c *fiber.Ctx) error {
 		return err
 	}
 
+	priceIva := price * 1.21
+
 	// Parse "0001-01-01" to time.Time type
 	lyt := "2006-01-02T15:04:05.000Z"
 	date, err := time.Parse(lyt, data["decisionDate"]+"T00:00:00.000Z")
@@ -158,22 +161,10 @@ func UpdateOfferData(c *fiber.Ctx) error {
 	}
 
 	// Parse string to uint8
-	percent, err := strconv.ParseUint(data["percent"], 10, 8)
+	percent, err := strconv.ParseFloat(data["percentN"], 64)
 
 	if err != nil {
 		return err
-	}
-
-	logrus.Info(reflect.TypeOf(percent))
-	logrus.Info(percent)
-
-	offer := models.OffersData{
-		Offer:        data["offer"],
-		OfferName:    data["offerName"],
-		DecisionDate: date,
-		Status:       data["status"],
-		Price:        price,
-		Percent:      percent,
 	}
 
 	id, err := strconv.Atoi(data["id"])
@@ -182,22 +173,51 @@ func UpdateOfferData(c *fiber.Ctx) error {
 		return err
 	}
 
+	var percnt float64
+	database.DB.Raw(`
+	SELECT percent
+	FROM offers_data od
+	WHERE id = ?`, id).Scan(&percnt)
+
+	percent = percent + percnt
+
+	offer := models.OffersData{
+		Offer:        data["offer"],
+		OfferName:    data["offerName"],
+		DecisionDate: date,
+		Status:       data["status"],
+		Price:        price,
+		PriceIva:     priceIva,
+		Percent:      percent,
+	}
+
 	database.DB.Where("id = ?", id).Model(&offer).Updates(offer)
 
 	return c.JSON(offer)
 }
 
+// func FilterPriceDataMonth(c *fiber.Ctx) error {
+
+// 	var query []models.MonthPriceOffer
+// 	database.DB.Raw(`
+// 	SELECT MONTH(decision_date) AS 'month', SUM(price) AS 'price'
+// 	FROM offers_data
+// 	WHERE deleted_at IS NULL
+// 	AND status = 'APPROVED'
+// 	OR status = 'PAYMENT_PENDING'
+// 	OR status = 'PAYD'
+// 	GROUP BY MONTH(decision_date);`).Scan(&query)
+// 	logrus.Info(query)
+// 	return c.JSON(query)
+// }
+
 func FilterPriceDataMonth(c *fiber.Ctx) error {
 
 	var query []models.MonthPriceOffer
 	database.DB.Raw(`
-	SELECT MONTH(decision_date) AS 'month', SUM(price) AS 'price'
-	FROM offers_data
+	SELECT MONTH(created_at) AS 'month', SUM(price_final) AS 'price'
+	FROM offers_reg_data
 	WHERE deleted_at IS NULL
-	AND status = 'APPROVED'
-	OR status = 'PAYMENT_PENDING'
-	OR status = 'PAYD'
-	GROUP BY MONTH(decision_date);`).Scan(&query)
-	logrus.Info(query)
+	GROUP BY MONTH(created_at);`).Scan(&query)
 	return c.JSON(query)
 }

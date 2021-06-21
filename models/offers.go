@@ -15,8 +15,9 @@ type OffersData struct {
 	DecisionDate time.Time      `json:"decisionDate" db:"decision_date"`
 	Code         string         `json:"code" db:"code"`
 	Status       string         `json:"status" db:"status"`
-	Percent      uint64         `json:"percent" db:"percent"`
+	Percent      float64        `json:"percent" db:"percent"`
 	Price        float64        `json:"price" db:"price"`
+	PriceIva     float64        `json:"priceIva" db:"price_iva"`
 	CreatedAt    time.Time      `json:"createdAt" db:"created_at"`
 	UpdatedAt    time.Time      `json:"updatedAt" db:"updated_at"`
 	DeletedAt    gorm.DeletedAt `json:"deletedAt" db:"deleted_at"`

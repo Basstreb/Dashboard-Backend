@@ -12,6 +12,7 @@ type CommonCosts struct {
 	ClientId        uint64         `json:"clientId" db:"client_id"`
 	ClientName      string         `json:"clientName" db:"cliet_name"`
 	Amount          float64        `json:"amount" db:"amount"`
+	AmountW         float64        `json:"amountW" db:"amount_w"`
 	CostDate        time.Time      `json:"costDate" db:"cost_date"`
 	CreatedAt       time.Time      `json:"createdAt" db:"created_at"`
 	UpdatedAt       time.Time      `json:"updatedAt" db:"updated_at"`

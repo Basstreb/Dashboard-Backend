@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 )
 
 func CreateClient(c *fiber.Ctx) error {
@@ -38,7 +37,6 @@ func SendClientData(c *fiber.Ctx) error {
 	var result []models.ClientData
 
 	database.DB.Raw("SELECT * FROM client_data").Scan(&result)
-	logrus.Info(result)
 	return c.JSON(result)
 }
 

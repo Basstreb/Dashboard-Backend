@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 )
 
 func UploadPdf(c *fiber.Ctx) error {
@@ -28,6 +27,11 @@ func UploadPdf(c *fiber.Ctx) error {
 			for _, file := range files {
 				fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
 				// => "tutorial.pdf" 360641 "application/pdf"
+
+				if file.Header["Content-Type"][0] != "application/pdf" {
+					return err
+				}
+
 				// Save the files to disk:
 				if err := c.SaveFile(file, fmt.Sprintf("../frontend/public/pdf/%s", codes)); err != nil {
 					return err
@@ -66,6 +70,11 @@ func UploadPdf(c *fiber.Ctx) error {
 			for _, file := range files {
 				fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
 				// => "tutorial.pdf" 360641 "application/pdf"
+
+				if file.Header["Content-Type"][0] != "application/pdf" {
+					return err
+				}
+
 				// Save the files to disk:
 				if err := c.SaveFile(file, fmt.Sprintf("../frontend/public/pdf/%s", codes)); err != nil {
 					return err
@@ -99,6 +108,11 @@ func UpdateUploadPdf(c *fiber.Ctx) error {
 		for _, file := range files {
 			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
 			// => "tutorial.pdf" 360641 "application/pdf"
+
+			if file.Header["Content-Type"][0] != "application/pdf" {
+				return err
+			}
+
 			// Save the files to disk:
 			if err := c.SaveFile(file, fmt.Sprintf("../frontend/public/pdf/%s", text)); err != nil {
 				return err
@@ -124,7 +138,6 @@ func UploadImg(c *fiber.Ctx) error {
 	// Parse the multipart form:
 	if form, err := c.MultipartForm(); err == nil {
 		// => *multipart.Form
-		logrus.Info("touch_2")
 		// Get all files from "documents" key:
 		files := form.File["imgs"]
 		// => []*multipart.FileHeader
@@ -132,7 +145,13 @@ func UploadImg(c *fiber.Ctx) error {
 		// Loop through files:
 		for _, file := range files {
 			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
-			// => "tutorial.pdf" 360641 "application/pdf"
+			// => "tutorial.pdf" 360641 "image/type"
+
+			imageCheck := strings.Split(file.Header["Content-Type"][0], "/")
+			if imageCheck[0] != "image" {
+				return err
+			}
+
 			// Save the files to disk:
 			if err := c.SaveFile(file, fmt.Sprintf("../frontend/public/img/%s", imgName)); err != nil {
 				return err
@@ -149,17 +168,21 @@ func UpdateUploadImg(c *fiber.Ctx) error {
 	// Parse the multipart form:
 	if form, err := c.MultipartForm(); err == nil {
 		// => *multipart.Form
-		logrus.Info("touch_2")
 		// Get all files from "documents" key:
 		files := form.File["imgs"]
 		// => []*multipart.FileHeader
-		id, err := strconv.Atoi(form.Value["docs"][0])
+		id, err := strconv.Atoi(form.Value["imgs"][0])
 
 		imgName := "IMG_21_" + strconv.Itoa(id) + ".png"
 		// Loop through files:
 		for _, file := range files {
 			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
-			// => "tutorial.pdf" 360641 "application/pdf"
+			// => "tutorial.pdf" 360641 "image/type"
+
+			imageCheck := strings.Split(file.Header["Content-Type"][0], "/")
+			if imageCheck[0] != "image" {
+				return err
+			}
 			// Save the files to disk:
 			if err := c.SaveFile(file, fmt.Sprintf("../frontend/public/img/%s", imgName)); err != nil {
 				return err
@@ -170,34 +193,3 @@ func UpdateUploadImg(c *fiber.Ctx) error {
 		return err
 	}
 }
-
-// func Test(c *fiber.Ctx) error {
-// 	var text string
-
-// 	if form, err := c.MultipartForm(); err == nil {
-// 		// => *multipart.Form
-// 		// Get all files from "documents" key:
-// 		files := form.File["docs"]
-// 		// => []*multipart.FileHeader
-// 		test, err := strconv.Atoi(form.Value["docs"][0])
-
-// 		if err != nil {
-// 			return err
-// 		}
-
-// 		database.DB.Raw(`SELECT code FROM offers_data od WHERE id = ?`, test).Scan(&text)
-// 		text = text + ".pdf"
-// 		// Loop through files:
-// 		for _, file := range files {
-// 			fmt.Println(file.Filename, file.Size, file.Header["Content-Type"][0])
-// 			// => "tutorial.pdf" 360641 "application/pdf"
-// 			// Save the files to disk:
-// 			if err := c.SaveFile(file, fmt.Sprintf("../frontend/public/pdf/%s", text)); err != nil {
-// 				return err
-// 			}
-// 		}
-// 		return err
-// 	} else {
-// 		return err
-// 	}
-// }

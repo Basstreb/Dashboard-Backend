@@ -7,14 +7,12 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/sirupsen/logrus"
 )
 
 func SendCommonCostData(c *fiber.Ctx) error {
 	var result []models.CostsCom
 
 	database.DB.Raw(`SELECT * FROM common_costs cc JOIN typo_costs tc ON cc.id = tc.id;`).Scan(&result)
-	logrus.Info(result)
 	return c.JSON(result)
 }
 
@@ -40,7 +38,7 @@ func CreateCommonCost(c *fiber.Ctx) error {
 		return err
 	}
 
-	iva, err := strconv.ParseUint(string(data["iva"]), 10, 64)
+	iva, err := strconv.ParseFloat(string(data["iva"]), 64)
 
 	if err != nil {
 		return err
@@ -52,11 +50,14 @@ func CreateCommonCost(c *fiber.Ctx) error {
 		return err
 	}
 
+	amountWo := (amount / (iva/100 + 1))
+
 	commonCost := models.CommonCosts{
 		CommonCostsName: data["commonCostsName"],
 		ClientId:        clientId,
 		ClientName:      data["clientName"],
 		Amount:          amount,
+		AmountW:         amountWo,
 		CostDate:        date,
 		CreatedAt:       time.Now().UTC(),
 	}
@@ -95,7 +96,7 @@ func UpdateCommonCost(c *fiber.Ctx) error {
 		return err
 	}
 
-	iva, err := strconv.ParseUint(string(data["iva"]), 10, 64)
+	iva, err := strconv.ParseFloat(string(data["iva"]), 64)
 
 	if err != nil {
 		return err
@@ -107,11 +108,14 @@ func UpdateCommonCost(c *fiber.Ctx) error {
 		return err
 	}
 
+	amountWo := (amount / (iva/100 + 1))
+
 	commonCost := models.CommonCosts{
 		CommonCostsName: data["commonCostsName"],
 		ClientId:        clientId,
 		ClientName:      data["clientName"],
 		Amount:          amount,
+		AmountW:         amountWo,
 		CostDate:        date,
 		CreatedAt:       time.Now().UTC(),
 	}
@@ -160,12 +164,11 @@ func DeleteCommonData(c *fiber.Ctx) error {
 func FilterCostDataMonth(c *fiber.Ctx) error {
 	var query []models.MonthPriceCost
 	database.DB.Raw(`
-	SELECT MONTH(cost_date) AS 'month', SUM(amount) AS 'amount'
+	SELECT MONTH(cost_date) AS 'month', SUM(amount_w) AS 'amount'
 	FROM common_costs cc
 	JOIN typo_costs tc
 	ON cc.id = tc.id
 	WHERE cc.deleted_at IS NULL
 	GROUP BY MONTH(cost_date);`).Scan(&query)
-	logrus.Info(query)
 	return c.JSON(query)
 }
