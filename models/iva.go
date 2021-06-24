@@ -12,20 +12,23 @@ type IvaAmountModel struct {
 }
 
 type IvaModel struct {
+	Id   uint64    `json:"id" db:"id"`
 	Name string    `json:"name" db:"name"`
 	Iva  float64   `json:"iva" db:"iva"`
 	Date time.Time `json:"date" db:"date"`
 }
 
-type IvaAccumulated struct {
+type IvaPaid struct {
 	Id        uint64         `json:"id" db:"id" gorm:"primaryKey"`
 	Amount    float64        `json:"amount" db:"amount"`
+	Date      time.Time      `json:"date" db:"date"`
 	CreatedAt time.Time      `json:"createdAt" db:"created_at"`
 	UpdatedAt time.Time      `json:"updatedAt" db:"updated_at"`
 	DeletedAt gorm.DeletedAt `json:"deletedAt" db:"deleted_at"`
 }
 
-type IvaPaid struct {
-	Id     uint64  `json:"id" db:"id" gorm:"primaryKey"`
-	Amount float64 `json:"amount" db:"amount"`
+type IvaPaidModel struct {
+	Id     uint64    `json:"id" db:"id" gorm:"primaryKey"`
+	Amount float64   `json:"amount" db:"amount"`
+	Date   time.Time `json:"date" db:"date"`
 }

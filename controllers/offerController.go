@@ -112,7 +112,7 @@ func CreateOffer(c *fiber.Ctx) error {
 func SendOfferData(c *fiber.Ctx) error {
 	var result []models.OffersData
 
-	database.DB.Raw("SELECT * FROM offers_data").Scan(&result)
+	database.DB.Raw("SELECT * FROM offers_data od WHERE od.deleted_at IS NULL;").Scan(&result)
 	return c.JSON(result)
 }
 

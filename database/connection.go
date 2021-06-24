@@ -25,5 +25,5 @@ func Connect() {
 	connection.AutoMigrate(&models.StaffCosts{})
 	connection.AutoMigrate(&models.TypoCosts{})
 	connection.AutoMigrate(&models.OffersRegData{})
-	connection.AutoMigrate(&models.IvaAccumulated{})
+	connection.AutoMigrate(&models.IvaPaid{})
 }
