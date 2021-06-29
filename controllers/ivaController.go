@@ -61,7 +61,10 @@ func IvaDataAcumulative(c *fiber.Ctx) error {
 	database.DB.Raw(`
 	SELECT ROUND(SUM(od.price_iva - od.price) ,2)
 	FROM offers_data od
-	WHERE od.deleted_at IS NULL;`).Scan(&ivaSopor)
+	WHERE od.deleted_at IS NULL
+	AND status = 'APPROVED'
+	OR status = 'PAYMENT_PENDING'
+	OR status = 'PAYD';`).Scan(&ivaSopor)
 
 	database.DB.Raw(`
 	SELECT ROUND(SUM(cc.amount - cc.amount_w) ,2)

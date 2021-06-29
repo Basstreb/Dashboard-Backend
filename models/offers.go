@@ -27,3 +27,11 @@ type MonthPriceOffer struct {
 	Month int     `json:"month" db:"month"`
 	Price float64 `json:"price" db:"price"`
 }
+
+type OfferRent struct {
+	Id         uint64  `json:"id" db:"id"`
+	OfferName  string  `json:"offerName" db:"offer_name"`
+	Total      float64 `json:"total" db:"total"`
+	CommonCost float64 `json:"commonCost" db:"common_cost"`
+	StaffCost  float64 `json:"staffCost" db:"staff_cost"`
+}

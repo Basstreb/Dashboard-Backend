@@ -25,7 +25,7 @@ func CreateCommonCost(c *fiber.Ctx) error {
 		return err
 	}
 
-	clientId, err := strconv.ParseUint(string(data["clientId"]), 10, 64)
+	offerId, err := strconv.ParseUint(string(data["offerId"]), 10, 64)
 
 	if err != nil {
 		return err
@@ -54,8 +54,8 @@ func CreateCommonCost(c *fiber.Ctx) error {
 
 	commonCost := models.CommonCosts{
 		CommonCostsName: data["commonCostsName"],
-		ClientId:        clientId,
-		ClientName:      data["clientName"],
+		OfferId:         offerId,
+		OfferName:       data["offerName"],
 		Amount:          amount,
 		AmountW:         amountWo,
 		CostDate:        date,
@@ -83,7 +83,7 @@ func UpdateCommonCost(c *fiber.Ctx) error {
 		return err
 	}
 
-	clientId, err := strconv.ParseUint(string(data["clientId"]), 10, 64)
+	offerId, err := strconv.ParseUint(string(data["offerId"]), 10, 64)
 
 	if err != nil {
 		return err
@@ -112,8 +112,8 @@ func UpdateCommonCost(c *fiber.Ctx) error {
 
 	commonCost := models.CommonCosts{
 		CommonCostsName: data["commonCostsName"],
-		ClientId:        clientId,
-		ClientName:      data["clientName"],
+		OfferId:         offerId,
+		OfferName:       data["offerName"],
 		Amount:          amount,
 		AmountW:         amountWo,
 		CostDate:        date,

@@ -37,8 +37,11 @@ func Setup(app *fiber.App) {
 
 	app.Get("/list_staff", controllers.SendStaffCostData)
 	app.Post("/create_staff", controllers.CreateStaffCostData)
+	app.Post("/create_staff_pr", controllers.CreateStaffProjectData)
 	app.Post("/update_staff", controllers.UpdateStaffCostData)
+	app.Post("/update_staff_pr", controllers.UpdateStaffProjectData)
 	app.Post("/delete_staff", controllers.DeleteStaffData)
+	app.Post("/delete_staff_pr", controllers.DeleteStaffProjectData)
 	app.Get("/staff_cost", controllers.FilterStaffCostData)
 
 	app.Post("/upload_pdf", controllers.UploadPdf)
@@ -54,6 +57,8 @@ func Setup(app *fiber.App) {
 	app.Post("/create_iva_paid", controllers.CreateIvaPaid)
 	app.Get("/list_iva_paid", controllers.ListIvaPaid)
 	app.Get("/list_iva_paid_price", controllers.IvaPricePaid)
+
+	app.Get("/rent", controllers.SendOfferRent)
 
 	// app.Post("/test", controllers.Test)
 }

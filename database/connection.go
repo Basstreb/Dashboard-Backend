@@ -26,4 +26,5 @@ func Connect() {
 	connection.AutoMigrate(&models.TypoCosts{})
 	connection.AutoMigrate(&models.OffersRegData{})
 	connection.AutoMigrate(&models.IvaPaid{})
+	connection.AutoMigrate(&models.StaffProject{})
 }

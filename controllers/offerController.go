@@ -221,3 +221,46 @@ func FilterPriceDataMonth(c *fiber.Ctx) error {
 	GROUP BY MONTH(created_at);`).Scan(&query)
 	return c.JSON(query)
 }
+
+func SendOfferRent(c *fiber.Ctx) error {
+	var result []models.OfferRent
+
+	database.DB.Raw(`
+	SELECT
+	od.id ,
+	od.offer_name,
+	od.price_iva AS 'total',
+	SUM(cc.amount) AS 'common_cost',
+	staff.total AS 'staff_cost'
+FROM
+	offers_data od
+LEFT JOIN common_costs cc ON
+	od.id = cc.offer_id
+LEFT JOIN (
+	SELECT
+		sp.project,
+		SUM(sp.total) AS 'total'
+	FROM
+		staff_projects sp
+	WHERE
+		sp.deleted_at IS NULL
+		AND sp.project != ' '
+	GROUP BY
+		sp.project
+	ORDER BY
+		sp.project) staff ON
+	od.id = staff.project
+WHERE
+	od.deleted_at IS NULL
+	AND od.status = 'PAYD'
+	OR od.status = 'APPROVED'
+	OR od.status = 'PAYMENT_PENDING'
+GROUP BY
+	od.id ,
+	od.offer_name,
+	od.price_iva,
+	staff.total
+	`).Scan(&result)
+
+	return c.JSON(result)
+}
