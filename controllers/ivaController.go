@@ -35,7 +35,7 @@ GROUP BY MONTH(cc.created_at);`).Scan(&query)
 func IvaDataSoported(c *fiber.Ctx) error {
 	var query []models.IvaModel
 	database.DB.Raw(`
-	SELECT od.id ,od.offer_name AS 'name', od.price_iva - od.price AS 'iva', od.created_at AS 'date' 
+	SELECT od.id ,od.offer_name AS 'name', od.price_iva - od.price AS 'iva', od.created_at AS 'date'
 FROM offers_data od
 WHERE od.deleted_at IS NULL
 AND od.status = 'APPROVED'
@@ -125,8 +125,9 @@ WHERE ip.deleted_at IS NULL;`).Scan(&query)
 func IvaPricePaid(c *fiber.Ctx) error {
 	var query []models.IvaAmountModel
 	database.DB.Raw(`
-	SELECT MONTH(ip.date) AS 'month', ip.amount
+	SELECT MONTH(ip.date) AS 'month', SUM(ip.amount) AS 'amount'
 FROM iva_paids ip
-WHERE ip.deleted_at IS NULL;`).Scan(&query)
+WHERE ip.deleted_at IS NULL
+GROUP BY MONTH(ip.date);`).Scan(&query)
 	return c.JSON(query)
 }

@@ -13,7 +13,7 @@ import (
 func SendStaffCostData(c *fiber.Ctx) error {
 	var result []models.StaffCosts
 
-	database.DB.Raw(`SELECT * FROM staff_costs`).Scan(&result)
+	database.DB.Raw(`SELECT * FROM staff_costs WHERE deleted_at IS NULL`).Scan(&result)
 	return c.JSON(result)
 }
 

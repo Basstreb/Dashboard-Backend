@@ -26,7 +26,7 @@ func Register(c *fiber.Ctx) error {
 
 	database.DB.Where("email = ?", data["email"]).First(&alreadyExistUserEmail)
 
-	if alreadyExistUserEmail.Id > 0 {
+	if alreadyExistUserEmail.ID > 0 {
 		c.Status(fiber.StatusNotFound)
 		return c.JSON(fiber.Map{
 			"message": "The user already exits",
@@ -36,10 +36,9 @@ func Register(c *fiber.Ctx) error {
 	password, _ := bcrypt.GenerateFromPassword([]byte(data["password"]), 14)
 
 	user := models.UserData{
-		Name:      data["name"],
-		Email:     data["email"],
-		Password:  password,
-		CreatedAt: time.Now().UTC(),
+		Name:     data["name"],
+		Email:    data["email"],
+		Password: password,
 	}
 
 	database.DB.Create(&user)
@@ -60,7 +59,7 @@ func Login(c *fiber.Ctx) error {
 
 	database.DB.Where("email = ?", data["email"]).First(&user)
 
-	if user.Id == 0 {
+	if user.ID == 0 {
 		c.Status(fiber.StatusNotFound)
 		return c.JSON(fiber.Map{
 			"message": "user not found",
@@ -75,7 +74,7 @@ func Login(c *fiber.Ctx) error {
 	}
 
 	claims := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Issuer:    strconv.Itoa(int(user.Id)),
+		Issuer:    strconv.Itoa(int(user.ID)),
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), //1 day
 	})
 
@@ -91,7 +90,7 @@ func Login(c *fiber.Ctx) error {
 	cookie := fiber.Cookie{
 		Name:     "jwt",
 		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24),
+		Expires:  time.Now().Add(time.Hour * 168),
 		HTTPOnly: true,
 	}
 
@@ -119,7 +118,13 @@ func User(c *fiber.Ctx) error {
 
 	database.DB.Where("id = ?", claims.Issuer).First(&user)
 
-	return c.JSON(user)
+	response := map[string]interface{}{
+		"token": cookie,
+	}
+
+	response["currentUser"] = user
+
+	return c.JSON(response)
 }
 
 func Logout(c *fiber.Ctx) error {

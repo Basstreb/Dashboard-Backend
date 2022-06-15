@@ -12,7 +12,7 @@ import (
 func SendCommonCostData(c *fiber.Ctx) error {
 	var result []models.CostsCom
 
-	database.DB.Raw(`SELECT * FROM common_costs cc JOIN typo_costs tc ON cc.id = tc.id;`).Scan(&result)
+	database.DB.Raw(`SELECT * FROM common_costs cc JOIN typo_costs tc ON cc.id = tc.id WHERE cc.deleted_at IS NULL`).Scan(&result)
 	return c.JSON(result)
 }
 

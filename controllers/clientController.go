@@ -36,7 +36,7 @@ func CreateClient(c *fiber.Ctx) error {
 func SendClientData(c *fiber.Ctx) error {
 	var result []models.ClientData
 
-	database.DB.Raw("SELECT * FROM client_data").Scan(&result)
+	database.DB.Raw("SELECT * FROM client_data WHERE deleted_at IS NULL").Scan(&result)
 	return c.JSON(result)
 }
 
